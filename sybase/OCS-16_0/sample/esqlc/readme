@@ -1,0 +1,250 @@
+This is the README file for ESQL/C sample programs.
+
+This directory contains the following example files:
+
+	example1.cp:	Cursor Example. 
+			Uses cursors to guide an interactive
+			query of the titles table.
+
+	example2.cp:    Updatable Cursor Example.
+			Using a cursor, steps through the
+			authors table, allowing you to update
+			the current row using the Embedded SQL
+			UPDATE WHERE CURRENT OF command.
+
+	example4.cp:    Scrollable Cursor Example.
+			Using a scrollable insensitive cursor, 
+			scrolls through the titles table.
+
+	example5.cp:    Scrollable Cursor Example.
+			Using a scrollable semi-sensitive cursor, 
+			scrolls through the titles table.
+
+        example6.cp:    Cursor Example.
+			Uses cursors to guide an interactive
+			query of the titles table. Example uses
+			indicators as an array of shorts to ease
+			programming. Example has the same program 
+			flow as example1.cp, but has no singleton 
+			indicator variable and uses a structure 
+			for the host variables. See function 
+			show_book().
+
+        example7.cp:    Cursor Example.
+			Uses cursors to guide an interactive
+			query of the titles table. Example uses
+			indicators as a struct of shorts to ease
+			programming. Example has the same program 
+			flow as example1.cp, but has no singleton 
+			indicator variable and uses a structure 
+			for the main column (host) variables. 
+			See function show_book().
+
+	example8.cp: 	Cursor Example.
+			Using a scrollable insensitive cursor, scrolls through 
+			the titles table.
+			The example shows a new cursor declare option named 
+			RELEASE_LOCKS_ON_CLOSE that allows level 1 locks to be 
+			released by ASE when the cursor is closed. This feature 
+			can only be used with a READ-ONLY cursor that can also 
+			be scrollable.
+
+	exampleHA.cp:   This is the cursor example, reworked to
+			demonstrate how to code for HA-Failover
+			events.
+
+	exampleHA2.cp:   This is the updatable cursor example, reworked to
+			demonstrate how to code for HA-Failover events 
+                        without depending on an error handler.
+
+	uni_example1.cp:Cursor Example. 
+			Uses cursors to guide an interactive
+			query of the titles table.
+			This example use unipubs2 database
+			instead of pubs2 to demonstrate using
+			Embedded SQL C to access dataserver's
+			unichar16 data.
+
+	uni_example2.cp:Updatable Cursor Example.
+			Using a cursor, steps through the
+			authors table, allowing you to update
+			the current row using the Embedded SQL
+			UPDATE WHERE CURRENT OF command.
+			This example use unipubs2 database
+			instead of pubs2 to demonstrate using
+			Embedded SQL C to access dataserver's
+			unichar16 data.
+
+	sybsqlex.h:     A header file included by the above
+			examples.  This file defines constant
+			strings for the ASE log-in name
+			and password. Edit this file before
+			compiling the examples.
+
+	makefile:       Precompiles, compiles, and links the
+			examples.
+
+	sybopts.sh:	helper script for the unix makefile
+
+	README:		This file.
+
+
+Makefile Definitions
+
+
+Before running an example, read through the code so that you understand what
+the program will do. To make and run an example, perform the following steps:
+
+ 1.     Verify that you have a user account on an available ASE.
+        Depending on the example program, there may be special requirements.
+        For each example, the introductory comment in the main source file
+        lists the specific server requirements.
+
+ 2.     Set the following environment variables:
+
+        SYBASE
+
+        - Set SYBASE to the full pathname of the SAP ASE SDK root directory.
+
+        SYBASE_OCS
+
+        - Set SYBASE_OCS to the directory where the Open client product is
+        installed. These two variables will be accessed as $SYBASE/$SYBASE_OCS
+
+        SYBPLATFORM
+
+        - Set SYBPLATFORM to the SAP abbreviation for your platform name.
+        This is required by the example makefile. Legal values are listed below.
+
+                HP:
+
+                hpia                    - 32bit HP IPF HP-UX B.11.22
+                nthread_hpia            - 32bit HP IPF HP-UX B.11.22 with native threads
+                hpia64                  - 64bit HP IPF HP-UX B.11.22
+                nthread_hpia64          - 64bit HP IPF HP-UX B.11.22 with native threads
+
+                hpux 			- HP 9000 HP-UX B.11
+                nthread_hpux 		- HP 9000 HP-UX B.11 with native threads
+                hpux64 			- 64bit HP 9000 HP-UX B.11
+                nthread_hpux64 		- 64bit HP 9000 HP-UX B.11 with native threads
+
+                IBM rs6000:
+
+                rs6000 			- IBM RISC System 6000
+                nthread_rs6000 		- IBM RISC System 6000 with aix native threads
+                rs600064                - IBM RISC System 6000 (64bit)
+                nthread_rs600064        - IBM RISC System 6000 with aix native threads (64bit)
+
+                Sun SPARC:
+
+                sun_svr4 		- Sun Solaris SPARC
+                nthread_sun_svr4 	- Sun Solaris SPARC with native threads
+                sun_svr464 		- 64bit Sun Solaris SPARC
+                nthread_sun_svr464 	- 64bit Sun Solaris SPARC with native threads
+
+                Linux Intel x86/x86_64:
+
+                linux                   - Linux Intel x86 non-threaded mode (32bit)
+                nthread_linux           - Linux Intel x86 threaded mode (32bit)
+                linuxamd64 | linux64    - Linux Intel/AMD64 non-threaded mode (64bit)
+                nthread_linuxamd64 |
+			nthread_linux64  - Linux Intel/AMD64 threaded mode (64bit)
+
+		Linux IBM P Series:
+
+		ibmplinux		- Linux IBM P Series non-threaded mode (32bit)
+		nthread_ibmplinux	- Linux IBM P Series pthread mode (32bit)
+		ibmplinux64		- Linux IBM P Series non-threaded mode (64bit)
+		nthread_ibmplinux64	- Linux IBM P Series pthread mode (64bit)
+
+		Sun x86:
+
+		sunx86			- Sun Solaris x86 non-threaded mode
+		nthread_sunx86		- Sun Solaris x86 pthread mode
+		sunx8664		- 64bit Sun Solaris x86 non-threaded mode
+		nthread_sunx8664	- 64bit Sun Solaris x86 pthread mode
+
+
+        DSQUERY
+
+        - Set DSQUERY to the name of the server that the examples connect to.
+
+
+	Set the library path environment variable. Depending on your platform, use 
+	the following (example for Sun Solaris): 
+
+	C-shell:		
+
+	setenv LD_LIBRARY_PATH ${SYBASE}/${SYBASE_OCS}/lib
+
+	Bourne/Korn shell:	
+
+	LD_LIBRARY_PATH=${SYBASE}/${SYBASE_OCS}/lib
+	export LD_LIBRARY_PATH
+
+	Some platforms (sun_svr4, sunx86, hpux) require /usr/ccs/bin in your path.
+
+
+Compiling the Examples
+
+	Make sure to change your account name and password in sybsqlex.h before 
+	compiling the examples. 
+
+	USER 		- User name to connect with. Defined as "sa" in the shipped
+                	version of sybsqlex.h.
+
+	PASSWORD 	- Password to connect with. Defined as "" (no password) in 
+			the shipped version of example.h.
+
+
+	To compile all the non-unicode example programs, type:
+
+		make all
+
+	To compile the unicode example programs, type:
+
+		make uni
+
+	To compile one at a time, type:
+
+		make example1
+		make example2
+		make exampleHA
+		make exampleHA2
+		make uni_example1
+		make uni_example2
+
+	To run the examples, type:
+
+		example1
+		example2
+		exampleHA
+		exampleHA2
+		uni_example1
+		uni_example2
+
+Notes:
+	
+	You'll need the "pubs2" database installed for example1, example2,
+	exampleHA and exampleHA2. And, you'll need the "unipubs2" database 
+	installed for uni_example1 and uni_example2. The System Administration
+	Guide contains instructions for installing the "pubs2" database.
+	The ctlibrary samples directory contains the script for installing
+	the "unipubs2" database. For more information about "unipubs2"
+	database, please refer to the README file of ctlibrary samples.
+
+	Unichar16 (utf16 encoded) support :
+	Unichar16 examples use unipubs2 database. "unipubs2" database is
+	modified from "pubs2" database, by changing some data's type from
+	char/varchar to unichar/univarchar. To install unipubs2, the default
+	charset of dataserver need to be set to "utf8" to enable dataserver's
+	unichar/univarchar types and your client need to have "utf8" charset
+	installed. Then run the following command:
+
+	  isql -Uusername -Ppassword -Sservername -Jutf8 < installunipubs2
+
+	The "installunipubs2" script is located at ctlib's sample directory.
+	All unichar16 examples bind the unichar/univarchar results to
+	char/varchar to do the implicit convert to the client's default
+	charset, so that results can be displayed on non unicode support
+	client and standard C program.

@@ -1,0 +1,125 @@
+
+[**Env Var Begin**]
+comment=This marks the beginning of the area of the environment variables.
+
+[DSQUERY]
+default=SYBASE
+comment=The default server for client applications.
+used-by=Open Client.
+type=sybase
+
+[DSLISTEN]
+default=SYBASE
+comment=The default name under which a server looks up its listener address.
+used-by=Open Server.
+type=sybase
+
+[LANG]
+default=
+comment=A locale name (from locales.dat file) that indicates which language and character set to use for messages, datatype conversions, and datetime formats.
+used-by=Open Client.
+type=sybase
+
+[LC_ALL]
+default=
+comment=A locale name (from locales.dat file) that indicates which language and character set to use for messages, datatype conversions, and datetime formats.
+used-by=Open Client.
+type=sybase
+
+[LC_CTYPE]
+default=
+comment=A locale name (from locales.dat file) that indicates which character set to use for datatype conversions.
+used-by=Open Client.
+type=sybase
+
+[LC_MESSAGE]
+default=
+comment=A locale name (from locales.dat file) that indicates which language and character set to use for messages.
+used-by=Open Client.
+type=sybase
+
+[LC_TIME]
+default=
+comment=A locale name (from locales.dat file) that indicates which language to use when converting between datetime and character datatypes.
+used-by=Open Client.
+type=sybase
+
+[PATH]
+default=
+comment=Path to Sybase runtime DLLs and executables, for running Sybase applications.
+used-by=Open Client, Open Server.
+type=system
+
+[INCLUDE]
+default=
+comment=Path to Sybase header files, for compiling Sybase applications.
+used-by=Open Client, Open Server.
+type=system
+
+[LIB]
+default=
+comment=Path to Sybase library files, for linking Sybase applications.
+used-by=Open Client, Open Server.
+type=system
+
+
+[**Env Var End**]
+comment=This marks the end of the area of the environment variables.
+
+
+
+[**NetLib Drivers Begin**]
+comment=This marks the beginning of the area of the Net-Lib drivers
+
+
+# Default NT Net-Library driver list.
+# Note: NT has the section name [DRIVERS], not [NT_DRIVERS].
+[DRIVERS]
+#NLWNSCK=TCP		Winsock TCP/IP Net-Library driver
+#NLMSNMP=NAMEPIPE	Named Pipes Net-Library driver
+#NLNWLINK=SPX		NT NWLINK SPX/IPX Net-Library driver
+#NLDECNET=DECNET		DecNET Net-Library driver for NT
+#NLDEC95=DECNET		DecNET Net-Library driver for Windows95
+#NLVIP32=VINESIP		Banyan Vines IP driver
+
+
+[**NetLib Drivers End**]
+comment=This marks the end of the area of the Net-Lib drivers
+
+
+[**Directory Services Drivers Begin**]
+comment=This marks the beginning of the area of the DirSvc drivers
+
+# This is the generic section.
+[DIRECTORY]
+;DCDDCE=DCE directory driver, under the generic section
+;DCDNDS=NDS directory driver, under the generic section
+;DCDREG=Registry directory driver, under the generic section
+;DCDBAN=Banyan directory driver, under the generic section
+
+[NT_DIRECTORY]
+LIBDREG=Directory driver for NT Registry
+LIBDDCE=Directory driver for DCE
+Local_Interface=Local interface file
+
+[**Directory Services Drivers End**]
+comment=This marks the end of the area of the DirSvc drivers
+
+
+
+[**Security Services Drivers Begin**]
+comment=This marks the beginning of the area of the Security drivers
+
+[SECURITY]
+LIBSMSSP=Security driver for Microsoft Security Provider
+LIBSDCE=Security driver for DCE
+LIBSNVL=Security driver for Novell Netware
+LIBSKRB=Security driver for CyberSAFE Kerberos
+
+
+
+[**Security Services Drivers End**]
+comment=This marks the end of the area of the Security drivers
+
+
+

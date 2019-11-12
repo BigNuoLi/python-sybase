@@ -1,0 +1,328 @@
+
+This directory contains Client-Library example programs. The examples
+and their source files are listed below.
+
+All of the examples use the utility routines from the file exutils.c. 
+To understand a sample, read both the main program code as well as 
+the called functions in exutils.c. Routines whose names begin with
+"ex_" are in exutils.c.
+
+All the examples use the connection information defined in example.h.
+
+Build instructions follow the list of examples.
+
+
+LIST OF EXAMPLE PROGRAMS (Source file names given in parentheses)
+
+batch_dynamic	(FILES: batch_dynamic.c exutils.c)
+
+	Demonstrates the use of parameter batching using ct_send_params()
+	in dynamic SQL.
+
+batch_lang	(FILES: batch_lang.c exutils.c)
+
+	Demonstrates the use of parameter batching using ct_send_params()
+	in language commands.
+
+blktxt		(FILES: blktxt.c, exutils.c)
+
+	Illustrates use of bulk library routines to copy static data into 
+	a table. 
+
+compute 	(FILES: compute.c, exutils.c)
+
+	Shows how to send a Transact-SQL command and how to process regular 
+	results and compute results.
+
+csr_disp	(FILES: csr_disp.c, exutils.c)
+
+	Demonstrates use of Client-Library cursors. Opens a cursor 
+	with a SELECT statement, then uses the cursor to step through the 
+	result rows. 
+
+exasync		(FILES: ex_main.c, ex_alib.c, exutils.c)
+
+	Demonstrates Client-Library's asynchronous mode. Sends a language
+	command and processes the results asynchronously. ex_alib.c shows 
+	how an asynchronous layer can be created on top of Client-Library. 
+	
+	NOTE:	The file EX_AREAD.ME contains a more detailed 
+		description of the asynchronous example and the 
+		routines in ex_alib.c.
+
+exconfig        (FILES: exconfig.c, exutils.c)
+
+        Demonstrates the use of Client-Library's external config file.
+        Shows how to set CS_SERVERNAME property value through the default
+        external config file of "$SYBASE\ini\ocs.cfg". 
+
+firstapp	(FILES: firstapp.c)
+	
+	A simple example program that connects to a server, sends a
+	select query, and prints the rows. This is the program that
+	that is discussed in the "Getting Started" chapter of the
+	Open Client Client-Library/C Programmer's Guide.
+
+getsend 	(FILES: getsend.c, exutils.c)
+
+	Shows how to retrieve and update data from a text-datatype column. 
+	The technique demonstrated here can also be used for image data. 
+
+i18n 		(FILES: i18n.c, exutils.c)
+
+	Demonstrates some of the international features available in 
+	Client-Library, including localized error messages and user-defined 
+	bind types.
+
+lobdynamic	(FILES: lobdynamic.c, exutils.c)
+
+	Shows how to send Large Object data (text, image or unitext types) as
+	parameters for Dynamic SQL statements. This sample shows two ways of
+	sending LOB data to a server: Either in one batch with a known size of
+	the data or in a stream of chunks, using a loop of ct_send_data() calls
+	until the entire LOB parameter is sent.
+	This sample can be run  against ASE version 15.7 or up or against
+	Open Server sample 'paramreader'.
+
+lobrpc		(FILES: lobrpc.c, exutils.c)
+
+	Shows how to send Large Object data (text, image or unitext types) as
+	input parameters for remote procedures. This sample shows two ways of
+	sending LOB data to a server: Either in one batch with a known size of
+	the data or in a stream of chunks, using a loop of ct_send_data() calls
+	until the entire LOB parameter is sent.
+	This sample is intended to run against the Open Server sample 'paramreader'
+	but can also be run against ASE version 15.7 or up.
+
+locator		(FILES: locator.c)
+
+	Demonstrates the use of lob locators to handle text/image/unitext
+	data without pulling the entire lob to the client application first.
+	This sample requires the pubs2 database to be installed in ASE.
+
+rpc		(FILES: rpc.c, exutils.c)
+
+	Shows how to send an RPC command to a server and how to process row, 
+	parameter, and status results returned from an RPC command.
+
+usedir       (FILES: usedir.c, exutils.c)
+ 
+        Shows how to use ct_ds_lookup and ct_ds_objinfo to search for
+        and view directory entries. The program queries the directory
+        for SAP server entries, and prints the contents of each entry
+        it finds.
+ 
+        If using a network-based directory (such as DCE or the NT Registry),
+        you should make sure that a  default directory driver is correctly
+        configured in libtcl.cfg, and populate the directory with entries
+        for your SAP servers. You can use the ocscfg and dsedit tools
+	to configure a directory driver and populate the directory.
+ 
+        If no directory driver is configured, the program will show all
+        servers defined in the SAP interfaces file (or SQL.INI, if your
+        platform uses it instead).
+ 
+secct       (FILES: secct.c, exutils.c)
+
+	Shows how to enable network-based security services
+	on a Client-Library connection. This example requires
+	a server that supports network-based authentication, such
+	as Security Guardian or the secsrv.c Open Server example
+	program. When run, this example requires command-line options
+	to specify the security options for the connection. See the
+	comments at the top of secct.c for a description of the
+	syntax.
+
+	Before running this example, make sure that you have configured
+	a sybase security driver that matches the security mechanism
+	used by the server. Use the OCSCFG tool to view the 
+	current security mechanism/driver configuration, and add
+	the mechanism if necessary. Please see the documentation
+	for details on using OCSCFG.
+
+wide_rpc: 	(FILES: wide_rpc.c, exutils.c)
+
+	Shows how to send an RPC command to a server and how to process row, 
+	parameter, and status results returned from an RPC command for a 
+	wide table..
+
+wide_dynamic:	(FILE: wide_dynamic.c wide_util.c exutils.c)
+
+	Shows how to send dynamic SQL to a server and process the result 
+	returned from the server for a wide table. 
+
+wide_curupd:	(FILE: wide_curupd.c wide_util.c exutil.c)
+
+	Shows how to write a cursor update programs. It sends the query to
+	server using cursor, updates the row and sends back to the server.
+
+uni_blktxt	(FILES: uni_blktxt.c, exutils.c)
+
+	Illustrates use of bulk library routines to copy static data into 
+	a table. Modified from blktxt for unichar16 datatype support. Use
+	unipubs2 database instead of pubs2.
+
+uni_compute 	(FILES: uni_compute.c, exutils.c)
+
+	Shows how to send a Transact-SQL command and how to process regular 
+	results and compute results. Modified from compute for unichar16
+	datatype support. Use unipubs2 database instead of pubs2.
+
+uni_csr_disp	(FILES: uni_csr_disp.c, exutils.c)
+
+	Demonstrates use of Client-Library cursors. Opens a cursor 
+	with a SELECT statement, then uses the cursor to step through the 
+	result rows. Modified from csr_disp for unichar16 datatype support.
+	Use unipubs2 database instead of pubs2.
+
+uni_firstapp	(FILES: uni_firstapp.c)
+	
+	A simple example program that connects to a server, sends a
+	select query, and prints the rows. Modified from firstapp for
+	unichar16 datatype support. Use unipubs2 database instead of
+	pubs2.
+
+uni_rpc		(FILES: uni_rpc.c, exutils.c)
+
+	Shows how to send an RPC command to a server and how to process row, 
+	parameter, and status results returned from an RPC command. Modified
+	from rpc for unichar16 datatype support.
+
+twophase	(FILES: twophase.c, ctxact.c, ctpr.c)
+
+	Illustrates the use of the two-phase commit service to perform
+	a distributed transaction.
+
+uctext 	(FILES: uctext.c, exutils.c)
+
+	Shows how to construct partial text update commands for an open server.
+	This requires a running 'updtext' open server sample.
+
+MAKING AND RUNNING THE EXAMPLES
+
+Before running an example, read through the code so that you understand what
+the program will do. To make and run an example, perform the following steps:
+
+ 1.	Verify that you have a user account on an available SQL Server. 
+	Depending on the example program, there may be special requirements.
+	For each example, the introductory comment in the main source file 
+	lists the specific server requirements. 
+
+ 2.	Make sure that the following environment variables are set correctly:
+
+	%SYBASE% is set to the full pathname of the SAP root directory.
+
+	%SYBASE_OCS% is set to the directory where the Open Client
+		product is installed (e.g. OCS-12_5)
+
+	%DSQUERY% is set to the name of the server that the examples 
+		connect to. Alternatively, edit example.h to hard-code a 
+		server name. See Step 3 below for details.
+
+	%LIB% includes the path to the  Open Client/Server Libraries
+		(e.g. set LIB=%SYBASE%\%SYBASE_OCS%\lib;%LIB% ).
+
+	%INCLUDE% points to the Open Client/Server include files
+		(e.g. set INCLUDE=%SYBASE%\%SYBASE_OCS%\include;%INCLUDE% ).
+
+
+
+ 3.	If necessary, edit the following connection information that is 
+	defined in example.h:
+
+	EX_USER - User name to connect with. Defined as "sa" in the shipped
+		version of example.h.
+
+	EX_PASSWORD - Password to connect with. Defined as "" (no
+		password) in the shipped version of example.h.
+
+	EX_SERVER - Server name to connect to. Defined as NULL (null 
+		pointer) in the shipped version of example.h. Leave this 
+		definition alone if you want to use the DSQUERY environment 
+		variable to name the server.
+
+		NOTE:	If EX_SERVER is not null, then its value is used
+			instead of the DSQUERY environment variable.
+
+ WINDOWS:
+
+ The example programs are not Windows GUI applications.
+
+
+ 4.	Build the example. Makefiles are provided:
+		makefile : NMAKE makefile for Microsoft VC++ 6.0 Compilers.
+
+	You can build the examples from the DOS prompt or from the File 
+	Manager. To use File Manager, change the directory to the examples' 
+	location, choose File/Run, then type the command lines as given below.
+
+	To build all the examples type:
+
+		nmake all
+
+	To build all unichar16 support examples type:
+
+		nmake uni
+
+	To build an individual example type:
+	
+		nmake <examplename>
+
+ 5.	Run the example like any other Windows executable.
+
+ NT:
+
+ The example programs are console applications.
+
+
+ 4.	Build the example. 
+		makefile - NMAKE makefile for Microsoft Compilers.
+
+
+	To build all the examples type:
+
+		nmake all
+
+	To build an individual example use:
+
+		nmake <examplename>
+
+ 5.	Run the example like any other console application.
+
+ 6.	Unichar16 (utf16 encoded) support :
+
+	Unichar16 examples use unipubs2 database. "unipubs2" database is
+	modified from "pubs2" database, by changing some data's type from
+	char/varchar to unichar/univarchar. To install unipubs2, the default
+	charset of dataserver need to be set to "utf8" to enable dataserver's
+	unichar/univarchar types and your client need to have "utf8" charset
+	installed. Then run the following command:
+
+	  isql -Uusername -Ppassword -Sservername -Jutf8 < installunipubs2
+
+	All unichar16 examples bind the unichar/univarchar results to
+	char/varchar to do the implicit convert to the client's default
+	charset, so that results can be displayed on non unicode support
+	client and standard C program.
+
+7.	Two Phase Commit example :
+
+	The two-phase commit example requires two servers, which are ready
+	for two-phase commit transactions, and each of which must contain 
+	the "pubs2" database. If necessary, edit the servers' information,
+	SERVER1, SERVER2, and COMMIT. To build two phase commit example,
+	use "nmake twophase". To configure server for two-phase commit
+	transactions, please refer to server's configuration guide.
+
+8.	uctext - partial text update sample
+
+	This sample demonstrates generating a partial update command
+	in an open server.  You may vary the offset and delete length
+	elements of the CS_IODESC structure and the text to be sent.
+	This requres an ASE to create and retrive a text column from
+	and an open server to which to send the 'updatetext' command.
+	The open server should be the 'updtext' sample in the srvlibrary
+	directory.  The open server will send back messages indicating
+	it received the 'updatetext' command in the language handler
+	and the text that was received in the bulk handler.
+

@@ -1,0 +1,161 @@
+
+This directory contains the following DB-Library example files:
+
+	example1.c:	Submits 2 queries to the server on the table
+			"sysobjects", one to find all the system tables,
+			the other to find the first 10 stored procedures.
+			Binds program variables to the returned rows, then
+			displays the rows.
+
+	example2.c:	Opens a data file, inserts data from the file into
+			a database table, binds the data to program variables,
+			and displays the results.
+
+	example3.c:	Illustrates binding aggregate and compute by results
+			using the "pubs2" database.
+
+	example4.c:	Submits a query to the server and saves up to 1,000
+			rows of the results using row buffering rather
+			than binding. Asks the user which row to display,
+			then displays that row.
+
+	example5.c:	Illustrates data conversion with the dbconvert()
+			routine.
+
+	example6.c:	Demonstrates the use of two DBPROCESSes to
+			simultaneously query and update a table through
+			browse mode.  This example uses a hardcoded query.
+
+	example7.c:	Demonstrates most of the browse mode routines
+			that deal with finding out about the results
+			of an ad hoc query.
+
+	example8.c:	Illustrates how to use remote procedure calls
+			and how to process return parameter values.
+
+	example9.c:	Uses the au_pix table in the "pubs2" database
+		        to show the basic outline of how to use the text
+			and image routines in DB-Library.
+
+	example10.c:	Illustrates how to insert arbitrarily large image 
+			data into the "pubs2" database.
+
+	example11.c:	Illustrates how to retrieve arbitrarily large image 
+			data from the "pubs2" database.
+	
+	example12.c:	Illustrates how to use many of the international 
+			features of DB-Library, including changing
+			language, using the appropriate date format,
+			and using the server's sort order.
+
+	bulkcopy.c:	Illustrates the use of the bulk copy special
+			library by performing a bulk copy from program
+			variables into a database table.
+
+	twophase.c:	Illustrates the use of the two-phase commit
+			service to perform a distributed transaction.
+
+	sybdbex.h:	The header file for the examples.
+
+	datafile:	The data file for examples 2 and 6.
+
+	imagefile:	An image file for example 10.
+
+	bcpdata.in:	The data file for the bulk copy example.
+
+	makefile:	Compiles the examples.
+
+	README:		This file.
+
+
+Making and Running the Examples:
+
+Before running an example, read through the code so that you understand what
+the program will do. To make and run an example, perform the following steps:
+
+ 1.	Verify that you have a user account on an available Adaptive Server
+	and that you have 'create database' permission. Example 2
+	creates the database "test", and the bulk copy example creates
+	the database "example_bcp".
+ 
+ 2.	Make sure that the following environment variables are set correctly:
+
+        %SYBASE% is set to the full pathname of the SAP root directory.
+
+	%SYBASE_OCS% is set to the directory where the Open Client
+		 product is installed (e.g. OCS-12_5)
+
+	%DSQUERY% is set to the name of the server that the examples connect to.
+	
+	%LIB% includes the path to the  Open Client/Server Libraries
+		(e.g. set LIB=%SYBASE%\%SYBASE_OCS%\lib;%LIB% ). 
+
+	%INCLUDE% points to the Open Client/Server include files
+		(e.g. set INCLUDE=%SYBASE%\%SYBASE_OCS%\include;%INCLUDE% ).
+	
+ 3.	Edit the sybdbex.h header file to reflect your Adaptive Server
+	username and password.
+ 
+ 4.	Build the example. A makefile is provided.
+		makefile : NMAKE makefile for Microsoft VC++ 6.0 Compilers.
+
+	To build all the example programs, type:
+
+		nmake all
+
+	To build an induvidual example, type:
+		nmake example1
+		nmake example2
+		   ...
+
+	To run the examples, type:
+		example1
+		example2
+		   ...
+
+
+Notes:
+	
+	You'll need the "pubs2" database installed to run Examples 3,
+	10, and the two-phase commit example. 
+
+	You'll need the "interpubs" database installed to run 
+	Example 12.
+
+	Example 6 creates the table "alltypes" in your default database,
+	and requires create table permission on that database.
+
+	Example 7 prompts the user for an ad hoc query.  Notice that the
+	results differ depending on whether the SELECT query includes 
+	the keywords FOR BROWSE and whether the table SELECTed is browsable.
+
+	Example 8 assumes you have created the stored procedure 
+	"rpctest" in your default database.  The comments at the top 
+	of the Example 8 source code specify the CREATE PROCEDURE statement 
+	necessary for creating "rpctest".  You must have grant execute
+	permission for "rpctest".
+
+	Example 10 prompts for an author id and the name of a file 
+	containing an image.  The author id must be of the form
+	"000-00-0000", like a social security number.  "imagefile", 
+	provided with the sample code, contains an image.
+	To run this example, you'll need insert permission on the
+	"au_pix" table in the "pubs2" database.
+
+	Example 12 shows how to use the international features with a
+	server whose language is us_english.  For other languages, modify the
+	LANGUAGE variable in sybdbex.h and the list of short month names
+	in example12.c, lines 304-309.  You'll need the "interpubs" 
+	database installed to run Example 12.
+
+	The bulk copy example creates the database "example_bcp" and
+	the table "alltypes" in that database.  To run this example,
+	you'll need create database and create table permission.
+
+	The two-phase commit example requires two servers, each of which 
+	must contain the "pubs2" database.  See Section 3 of the 
+	DB-Library Reference Supplement for a complete description of the 
+	requirements for running this example.
+
+	The programs are well commented; take a look before you run
+	them if you'd like more details.

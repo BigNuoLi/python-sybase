@@ -1,0 +1,148 @@
+This is the README file for Python sample programs.
+
+The sample programs demonstrate specific functionality of the SAP ASE
+Python extension module. These programs are designed as guides for 
+application programmers, not as Python training aids.
+
+It is recommended that users read the descriptions at the top of each
+source file and examine the source code prior to attempting to use the
+sample programs. 
+
+Lastly, these programs are not intended as examples of robust,
+production-quality open client applications; only minimal effort has
+been made to "bullet-proof" these applications.
+
+
+LIST OF EXAMPLE PROGRAMS (Source file names given in parentheses)
+
+test		(FILES: test.py)
+	A program to check a successful installation. It loads the SAP ASE
+	Python extension module and checks if a connection can be established.
+
+firstapp        (FILES: firstapp.py)
+
+        A simple example program that connects to a server, sends a
+        select query, and prints the rows. 
+
+compute		(FILES: compute.py)
+ 	This example demonstrates processing compute results.  It sends a
+ 	query to the server. It then fetches the rows, including compute
+	results.
+
+callproc	(FILES callproc.py)
+	This example program demonstrates sending a RPC command
+	to a Server and the processing of row, parameter, and status
+	results returned from the remote procedure. It also demonstrates  
+	the use of different datatypes as parameters.
+
+dsnconnect	(FILES dsnconnect.py)
+    	This example demonstrates connecting to a server using a dsn
+
+lob	(FILES lob.py)
+    	This example demonstrates transferring lob data for text and
+	image columns. Data is first transferred from a bytearray object.
+	Next data is transferred from a file. Finally data is 
+	is retrieved from the lob columns and displayed.
+
+blk		(FILES blk.py)
+ 	This example program uses the bulk copy routines to copy
+ 	data to a server table. The data is then retrieved and displayed.
+
+blkmany		(FILES blkmany.py) 
+ 	This example program uses the bulk copy routines to copy
+ 	data to a server table multiple rows at a time. Data is copied 5 rows 
+	at a time. The data is then copied out 10 rows at a time.
+
+blkiter		(FILES blkiter.py)
+ 	This example program demonstrates the use of the Python iteration
+	protocol to bulk copy out rows of a table.
+
+blktypes	(FILES blktypes.py)
+ 	This example program demonstrates the use of different Python object 
+	types as values in a bulk operation.  It demonstrates the use of 
+	default, NULL values and other different Python types.
+
+blktypes	(FILES blktypes.py)
+ 	This example program demonstrates the use of different Python object 
+	types as values in a bulk operation.  It demonstrates the use of 
+	default, NULL values and other different Python types.
+
+blklob	(FILES blklob.py)
+    	This example demonstrates bulk transferring of lob data for text and
+	image columns. Data is first transferred from a bytearray object.
+	Next data is transferred from a file. Finally data is 
+	is bulk copied out from the lob columns and displayed.
+
+
+RUNNING THE EXAMPLES
+
+To run an example, perform the following steps:
+
+ 1.	Verify that you have a user account on an available ASE. 
+	These samples will work only with OCS 15.7 and up. 
+	Depending on the example program, there may be special requirements.
+	For each example, the introductory comment in the main source file 
+	lists the specific server requirements. 
+
+
+ 2.	Set the following environment variables:
+
+	${SYBASE} is set to the full pathname of the SAP ASE SDK root directory.
+
+	${SYBASE_OCS} is set to the directory where the Open Client
+		product is installed (e.g. OCS-16_0).
+
+	${DSQUERY} is set to the name of the server to connect to.
+
+	${PYTHONPATH} includes the path where the SAP ASE Python extension module
+		is installed. Depending on your platform, 
+		use the following (example for Sun Solaris):
+
+        	C-shell:
+		setenv PYTHONPATH ${SYBASE}/${SYBASE_OCS}/lib
+
+		Bourne/Korn shell:
+		PYTHONPATH=${SYBASE}/${SYBASE_OCS}/lib
+		export PYTHONPATH
+
+	Set the library path environment variable. Depending on your platform, 
+	use the following (example for Sun Solaris):
+
+        	C-shell:
+		setenv LD_LIBRARY_PATH ${SYBASE}/${SYBASE_OCS}/lib
+
+		Bourne/Korn shell:
+		LD_LIBRARY_PATH=${SYBASE}/${SYBASE_OCS}/lib
+		export LD_LIBRARY_PATH
+
+	Note 1: Refer to your operating sytem documentation for the
+		name of the library path envirmonment variable.
+		(E.g. on hpux, use SHLIB_PATH)
+
+	Note 2: Some platforms (sun_svr4, hpux) require /usr/ccs/bin
+		in your path.
+
+	Note 3: Some platforms (such as rs6000) require /usr/lib in
+		your LD_LIBRARY_PATH.
+
+
+3.	If necessary, in each sample edit the connection information. The
+	following keyword arguments of the connect() method of the sybpydb 
+	module should be evaluted:
+
+	user - User name to connect with. Specifed as 'sa' in the shipped
+		version.
+
+	password - Password to connect with. Defined as '' (no
+		password) in the shipped version.
+
+	servername - Server name to connect to. Not passed in the shipped
+		version. Do not pass this argument if you want to use the 
+		DSQUERY environment variable to name the server.
+
+		NOTE:	If this argument  is not null, then its value is used
+			instead of the DSQUERY environment variable.
+
+
+ 4.	Run the example with the command "python <program>", where <program>
+	is the program name. 

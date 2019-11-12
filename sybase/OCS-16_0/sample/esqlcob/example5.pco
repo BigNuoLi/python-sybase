@@ -1,0 +1,277 @@
+      ********************************************************************
+ 
+      * Copyright Notice and Disclaimer
+      * -------------------------------
+ 
+      * (c) Copyright 2013.
+      * SAP AG or an SAP affiliate company. All rights reserved.
+      * Unpublished rights reserved under U.S. copyright laws.
+ 
+      * SAP grants Licensee a non-exclusive license to use, reproduce,
+      * modify, and distribute the sample source code below (the "Sample Code"),
+      * subject to the following conditions:
+ 
+      * (i) redistributions must retain the above copyright notice;
+ 
+      * (ii) SAP shall have no obligation to correct errors or deliver
+      * updates to the Sample Code or provide any other support for the
+      * Sample Code;
+ 
+      * (iii) Licensee may use the Sample Code to develop applications
+      * (the "Licensee Applications") and may distribute the Sample Code in
+      * whole or in part as part of such Licensee Applications, however in no
+      * event shall Licensee distribute the Sample Code on a standalone basis;
+ 
+      * (iv) and subject to the following disclaimer:
+      * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+      * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+      * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+      * SAP AG or an SAP affiliate company OR ITS LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+      * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+      * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+      * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+      * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+      * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+      * USE OF THE SAMPLE CODE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+      * DAMAGE.
+ 
+      ********************************************************************
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.  EXAMPLE5.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.  xyz.
+       OBJECT-COMPUTER.  xyz.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       
+      * example5.pco
+       
+      * This is an embedded COBOL program which provides interactive
+      * querying of the pubs2 database, leading the user through a series
+      * of prompts to select titles from the titles table.  After a
+      * title is selected, it prints information information regarding 
+      * that book.  It makes extensive use of cursors.
+      * It uses group items (struct in C) for host variables in a 
+      * particular query with a table (array in C) for indicator elements.
+       
+           EXEC SQL INCLUDE SQLCA END-EXEC.
+       
+           EXEC SQL BEGIN DECLARE SECTION END-EXEC 
+       
+      * userid and password
+       
+         01  UID    PIC X(30).
+         01  PASS    PIC X(30).
+
+      * input from database
+
+         01 M-TYPE     PIC X(13).
+         01 M-AUTHOR   PIC X(61).
+         01 M-TITLEID  PIC X(6).
+
+         01 HOST-STRUCTURE-M1.
+            03 M-TITLE    PIC X(64).
+            03 M-NOTES    PIC X(200).
+            03 M-PUBNAME  PIC X(40).
+            03 M-PUBCITY  PIC X(20).
+            03 M-PUBSTATE PIC X(2).
+
+         01 INDICATOR-TABLE. 
+            03 I-NOTES-ARR PIC S9(4) COMP-5 OCCURS 5 TIMES.
+
+      * for user inputs
+
+         01    USER-TYPE    PIC X(13).
+         01    USER-TITLEID    PIC X(6).
+
+           EXEC SQL END DECLARE SECTION END-EXEC.
+
+      * flags and loop variables
+
+         01  DONE    PIC XXX VALUE "NO".
+
+         01  USER-MORE    PIC X.
+
+      * for output
+
+         01  OUT-MSG    PIC X(80).
+
+      * For reading in and ignoring cmd-line arg.
+         01    CMD-ARG    PIC X(1).
+               
+       PROCEDURE DIVISION.
+       P0.
+      * get rid of the cmd line arg if any 
+	    DISPLAY 'Press enter to start'
+           ACCEPT CMD-ARG.
+       
+           EXEC SQL WHENEVER SQLERROR PERFORM ERR-PARA END-EXEC
+           EXEC SQL WHENEVER SQLWARNING PERFORM WARN-PARA END-EXEC
+           EXEC SQL WHENEVER NOT FOUND CONTINUE END-EXEC.
+       
+      * NOTE: fill in your user name and password here.
+           MOVE "username" TO UID.
+           MOVE "password" TO PASS.
+       
+           EXEC SQL CONNECT :UID IDENTIFIED BY :PASS END-EXEC.
+           EXEC SQL USE pubs2 END-EXEC.
+
+           PERFORM TYPE-LOOP UNTIL DONE = "YES".
+
+      * release is not yet implemented.
+      *       EXEC SQL RELEASE END-EXEC.
+           STOP RUN.
+
+      * Print a list of book types.
+       TYPE-LOOP.
+           EXEC SQL DECLARE typelist CURSOR FOR
+               SELECT DISTINCT type FROM titles END-EXEC.
+           EXEC SQL OPEN typelist END-EXEC.
+           DISPLAY ' '.    
+           PERFORM PRINT-TYPE UNTIL SQLCODE = 100.
+           EXEC SQL CLOSE typelist END-EXEC.
+           DISPLAY ' '.
+      * Get user's choice.
+           DISPLAY "Which type?".
+           ACCEPT USER-TYPE.
+           IF USER-TYPE = " "
+               MOVE "YES" TO DONE
+           ELSE
+      * Print titles, get user choice, and print info.
+               PERFORM TITLE-LOOP UNTIL DONE = "YES"
+               MOVE "NO" TO DONE.
+
+      * Print the next type from the typelist cursor.
+       PRINT-TYPE.
+           EXEC SQL FETCH typelist INTO :M-TYPE END-EXEC.
+           IF SQLCODE NOT = 100
+               DISPLAY M-TYPE.
+
+      * Print a list of book titles with type USER-TYPE, let the
+      * user pick one, and print information regarding it.
+       TITLE-LOOP.
+           EXEC SQL DECLARE titlelist CURSOR FOR
+               SELECT title_id, substring(title,1,64)
+               FROM titles 
+               WHERE type LIKE :USER-TYPE
+           END-EXEC.
+           EXEC SQL OPEN titlelist END-EXEC.
+           MOVE " " TO M-TITLE.
+           DISPLAY ' '.
+           PERFORM PRINT-TITLE UNTIL SQLCODE = 100.
+           DISPLAY ' '.
+           IF M-TITLE = " "
+               STRING 
+                  "There are no " DELIMITED BY SIZE
+                   USER-TYPE DELIMITED BY " "
+                 " titles." DELIMITED BY SIZE
+               INTO OUT-MSG 
+               DISPLAY OUT-MSG 
+               MOVE "YES" TO DONE 
+           ELSE
+               DISPLAY "Which title id?"
+               ACCEPT USER-TITLEID
+               IF USER-TITLEID = " "
+                   MOVE "YES" TO DONE
+               ELSE PERFORM SHOW-BOOK.
+           EXEC SQL CLOSE titlelist END-EXEC.
+
+      * Print title_id and title for the next book on titlelist.
+       PRINT-TITLE.
+           EXEC SQL FETCH titlelist INTO :M-TITLEID, :M-TITLE END-EXEC.
+           IF SQLCODE NOT = 100
+               DISPLAY M-TITLEID, ' ', M-TITLE.
+
+      * Print information on the book identified by USER-TITLEID.
+       SHOW-BOOK.
+
+      * Get information on the book.  Since the titleid is unique,
+      * we don't need a cursor.  We use an indicator variable to find
+      * out whether there are any notes or not.
+      *
+      * The SQL stmt below uses a hostvar structure (group item) with
+      * an indicator 'table' for easy reference in the INTO clause. 
+      * Note that this example is the same as example1.pco but uses
+      * group item/table reference instead of single hostvar/indicator
+      * pairs.
+      *
+           EXEC SQL 
+               SELECT substring(title, 1, 64), notes, pub_name, city,
+                 state
+               INTO :HOST-STRUCTURE-M1:I-NOTES-ARR
+               FROM titles, publishers
+               WHERE titles.pub_id = publishers.pub_id
+               AND title_id = :USER-TITLEID
+           END-EXEC.
+           IF SQLCODE = 100
+               DISPLAY "Can't find title ", USER-TITLEID 
+           ELSE
+               DISPLAY " " 
+               DISPLAY M-TITLE 
+               DISPLAY "Pub: ", M-PUBNAME, M-PUBCITY, M-PUBSTATE
+      * There can be multiple authors, so we need a cursor to 
+      * get their names.
+               EXEC SQL DECLARE authors CURSOR FOR
+                   SELECT au_fname + ' ' + au_lname
+                   FROM authors, titleauthor
+                   WHERE authors.au_id = titleauthor.au_id
+                   AND title_id = :USER-TITLEID
+               END-EXEC
+               EXEC SQL OPEN authors END-EXEC
+               PERFORM PRINT-AUTHOR UNTIL SQLCODE = 100
+               EXEC SQL CLOSE authors END-EXEC 
+               PERFORM PRINT-NOTES
+               DISPLAY "Enter to continue."
+               ACCEPT USER-MORE.
+
+      * Print the next author from the quthors cursor.
+       PRINT-AUTHOR.
+           EXEC SQL FETCH authors INTO :M-AUTHOR END-EXEC.
+           IF SQLCODE NOT = 100
+               DISPLAY M-AUTHOR.
+
+      * Print the notes, if they exist -- check the indicator variable
+      * to find out whether they do. Use the indicator table element
+      * to test for a NULL value. The 2nd element in I-NOTES-ARR is
+      * a NULL able column.
+       PRINT-NOTES.
+           IF I-NOTES-ARR(2) NOT = -1
+               DISPLAY M-NOTES.
+
+      *************************************************************
+       WARN-PARA.
+            
+            DISPLAY "Warning message is " SQLERRMC.
+
+            IF SQLWARN1 EQUAL "W"
+                DISPLAY "Data has been truncated.".
+            IF SQLWARN2 EQUAL "W" 
+                DISPLAY "A null value was eliminated from the argument
+      -            	" set of a function.".
+            IF SQLWARN3 EQUAL "W" 
+                DISPLAY "An into clause had too many or too few host
+      -    	" variables.".
+            IF SQLWARN4 EQUAL "W"
+                DISPLAY "A dynamic update or delete was lacking a where
+      -    	" clause.".
+            IF SQLWARN5 EQUAL "W"
+                DISPLAY "A server conversion or truncation error
+      -    	" occurred.".
+        WARN-PARA-END.
+            EXIT.
+
+      *************************************************************
+        ERR-PARA.
+      *
+      * print the error code, the error message and the line number of
+      * the command that caused the error.
+      *
+
+            DISPLAY "Error code is " SQLCODE.
+            
+            DISPLAY "Error message is " SQLERRMC.
+
+            STOP RUN.
+      *************************************************************

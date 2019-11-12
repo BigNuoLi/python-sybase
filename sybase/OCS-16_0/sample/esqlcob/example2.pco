@@ -1,0 +1,238 @@
+      *******************************************************************
+ 
+      * Copyright Notice and Disclaimer
+      * -------------------------------
+ 
+      * (c) Copyright 2013.
+      * SAP AG or an SAP affiliate company. All rights reserved.
+      * Unpublished rights reserved under U.S. copyright laws.
+ 
+      * SAP grants Licensee a non-exclusive license to use, reproduce,
+      * modify, and distribute the sample source code below (the "Sample Code"),
+      * subject to the following conditions:
+ 
+      * (i) redistributions must retain the above copyright notice;
+ 
+      * (ii) SAP shall have no obligation to correct errors or deliver
+      * updates to the Sample Code or provide any other support for the
+      * Sample Code;
+ 
+      * (iii) Licensee may use the Sample Code to develop applications
+      * (the "Licensee Applications") and may distribute the Sample Code in
+      * whole or in part as part of such Licensee Applications, however in no
+      * event shall Licensee distribute the Sample Code on a standalone basis;
+ 
+      * (iv) and subject to the following disclaimer:
+      * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+      * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+      * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+      * SAP AG or an SAP affiliate company OR ITS LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+      * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+      * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+      * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+      * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+      * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+      * USE OF THE SAMPLE CODE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+      * DAMAGE.
+ 
+      ********************************************************************
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.  EXAMPLE2.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.  xyz.
+       OBJECT-COMPUTER.  xyz.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       
+      * example2.pco
+       
+      * This is an embedded COBOL program which displays rows from
+      * the authors table in the pubs2 database and lets the user edit them.
+
+           EXEC SQL INCLUDE SQLCA END-EXEC.
+       
+           EXEC SQL BEGIN DECLARE SECTION END-EXEC 
+       
+      * userid and password
+       
+         01  uid        PIC X(30).
+         01  pass       PIC X(30).
+       
+      * places into which we can fetch the fields from the authors table.
+       
+         01  m-au-id    PIC X(12).
+         01  m-au-lname PIC X(40).
+         01  m-au-fname PIC X(20).
+         01  m-phone    PIC X(12).
+         01  m-address  PIC X(40).
+         01  m-city     PIC X(20).
+         01  m-state    PIC X(2).
+         01  m-postalcode       PIC X(10).
+       
+           EXEC SQL END DECLARE SECTION END-EXEC 
+       
+
+         01  user-choice PIC X(1) VALUE ' '.
+
+         01  user-field PIC X(40).
+
+      * For reading in and ignoring cmd-line arg.
+         01     CMD-ARG PIC X.
+         01     ONE-VAL PIC S9(9) COMP VALUE IS 1.
+               
+       PROCEDURE DIVISION.
+       P0.
+      * get rid of the cmd line arg if any 
+	    DISPLAY 'Press enter to start'
+           ACCEPT CMD-ARG.
+       
+           EXEC SQL WHENEVER SQLERROR PERFORM ERR-PARA END-EXEC
+           EXEC SQL WHENEVER SQLWARNING PERFORM WARN-PARA END-EXEC
+       
+      * NOTE: fill in your user name and password here.
+           MOVE "username" TO uid.
+           MOVE "password" TO pass.
+       
+           EXEC SQL CONNECT :uid IDENTIFIED BY :pass END-EXEC.
+       
+           EXEC SQL USE pubs2 END-EXEC.
+       
+           EXEC SQL 
+           DECLARE authors CURSOR FOR
+                   SELECT  au_id, au_lname, au_fname, 
+                    phone, address, city, state, 
+                    postalcode
+                   FROM         authors END-EXEC
+               EXEC SQL OPEN authors END-EXEC.
+       
+                  EXEC SQL WHENEVER NOT FOUND GO TO DONE END-EXEC.
+           PERFORM DO-ONE-AUTHOR UNTIL ONE-VAL = 0.
+
+       DO-ONE-AUTHOR.  
+           EXEC SQL 
+                   FETCH authors INTO
+                :m-au-id, :m-au-lname, :m-au-fname, 
+                :m-phone, :m-address, :m-city, 
+                :m-state, :m-postalcode
+           END-EXEC.
+
+           IF user-choice = 'Q' OR user-choice = 'q'
+                GO TO DONE.
+       
+                   DISPLAY "au-id ",  m-au-id.  
+                   DISPLAY "au-lname ", m-au-lname.
+                   DISPLAY "au-fname ", m-au-fname.
+                   DISPLAY "phone ", m-phone.
+                   DISPLAY "address ", m-address.
+                   DISPLAY "city ", m-city.
+                   DISPLAY "state ", m-state.
+                   DISPLAY "postalcode ", m-postalcode.
+       
+                   DISPLAY " ".
+            DISPLAY " ".
+            DISPLAY "[E]dit, [N]ext, [Q]uit ".
+            ACCEPT user-choice.
+            IF user-choice = 'e' OR user-choice = 'E'
+                PERFORM EDIT-AUTHOR.
+
+        
+        EDIT-AUTHOR.
+                   DISPLAY "au-id ",  m-au-id.
+                   DISPLAY "au-lname ".
+            ACCEPT user-field.
+            IF user-field NOT = " "
+                MOVE user-field TO m-au-lname.
+                   DISPLAY "au-fname ".
+            ACCEPT user-field.
+            IF user-field NOT = " "
+                MOVE user-field TO m-au-fname.
+                   DISPLAY "phone ".
+            ACCEPT user-field.
+            IF user-field NOT = " "
+                MOVE user-field TO m-phone.
+                   DISPLAY "address ".
+            ACCEPT user-field.
+            IF user-field NOT = " "
+                MOVE user-field TO m-address.
+                   DISPLAY "city ".
+            ACCEPT user-field.
+            IF user-field NOT = " "
+                MOVE user-field TO m-city.
+                   DISPLAY "state ".
+            ACCEPT user-field.
+            IF user-field NOT = " "
+                MOVE user-field TO m-state.
+                   DISPLAY "postalcode ".
+            ACCEPT user-field.
+            IF user-field NOT = " "
+                MOVE user-field TO m-postalcode.
+
+            DISPLAY " ".  
+            DISPLAY " ".
+
+                   DISPLAY "au-id ", m-au-id.   
+                   DISPLAY "au-lname ", m-au-lname.
+                   DISPLAY "au-fname ", m-au-fname.
+                   DISPLAY "phone ", m-phone.
+                   DISPLAY "address ", m-address.
+                   DISPLAY "city ", m-city.
+                   DISPLAY "state ", m-state.
+                   DISPLAY "postalcode ", m-postalcode.
+                   DISPLAY " ".
+            DISPLAY " ".
+            DISPLAY "Update? ".
+            ACCEPT user-choice.
+                   IF user-choice = 'y' OR user-choice = 'Y'
+                       EXEC SQL 
+                       UPDATE authors SET
+                                au_lname = :m-au-lname,
+                                au_fname = :m-au-fname,
+                                phone = :m-phone,
+                                address = :m-address,
+                                city = :m-city,
+                                state = :m-state,
+                                postalcode = :m-postalcode
+                       WHERE CURRENT OF authors END-EXEC.
+            DISPLAY " ".
+                
+       DONE.    
+      *           EXEC SQL RELEASE END-EXEC.
+                  DISPLAY "bye".
+           STOP RUN.
+
+      *************************************************************
+       WARN-PARA.
+            DISPLAY "Warning code is " SQLCODE.
+            
+            DISPLAY "Warning message is " SQLERRML.
+
+            IF SQLWARN1 EQUAL "W"
+                DISPLAY "Data has been truncated.".
+            IF SQLWARN2 EQUAL "W" 
+                DISPLAY "A null value was eliminated from the argument
+      -                 " set of a function.".
+            IF SQLWARN3 EQUAL "W" 
+                DISPLAY "An into clause had too many or too few host
+      -         " variables.".
+            IF SQLWARN4 EQUAL "W"
+                DISPLAY "A dynamic update or delete was lacking a where
+      -         " clause.".
+            IF SQLWARN5 EQUAL "W"
+                DISPLAY "A server conversion or truncation error
+      -         " occurred.".
+        WARN-PARA-END.
+            EXIT.
+
+      *************************************************************
+        ERR-PARA.
+      *
+      * print the error code, the error message and the line number of
+      * the command that caused the error.
+      *
+
+            DISPLAY "Error message is " SQLERRMC.
+
+            STOP RUN.
+      *************************************************************

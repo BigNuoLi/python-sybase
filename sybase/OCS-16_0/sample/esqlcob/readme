@@ -1,0 +1,158 @@
+This is the README file for the ESQL/Cobol sample programs.
+
+This directory contains four sample programs, example1.pco,  
+example2.pco, example3.pco, example4.pco, example5.pco,
+example6.pco and example7.pco.
+
+example1.pco provides interactive querying of the pubs2 database, 
+leading the user through a series of prompts to select titles from 
+the titles table.  After a title is selected, it prints information
+information regarding that book. It uses cursors.
+
+example2.pco displays rows from the authors table in the pubs2 
+database and allows the user to modify a select row. 
+
+example3.pco uses an insensitive scrollable cursor to display rows
+from the titles table in the pubs2 database. No updates are allowed
+with a scrollable cursor, only (random) retrievals. 
+
+example4.pco does the same as example3.pco but uses a semi-sensitive 
+scrollable cursor.
+
+example5.pco is the same as example1 but uses group items (struct in C)
+for the host variables with a table (array in C) for the corresponding 
+indicator variables.
+
+example6.pco is the same as example5 but uses group items (struct in C)
+for the host variables with group items (struct in C) for the 
+corresponding indicator variables.
+
+example7.pco is similar to example 3 and example4 but with the new cursor 
+declare option named RELEASE_LOCKS_ON_CLOSE that allows level 1 locks to 
+be released by ASE when the cursor is closed. This feature can only be used 
+with a READ-ONLY cursor that can also be scrollable.
+
+
+Makefile Definitions
+
+Before running an example, read through the code so that you understand what
+the program will do. To make and run an example, perform the following steps:
+
+ 1.     Verify that you have a user account on an available ASE.
+        Depending on the example program, there may be special requirements.
+        For each example, the introductory comment in the main source file
+        lists the specific server requirements. Please make sure you modify
+	the examples such that "username" and "password" strings get replaced
+	with your ASE login-id and password.
+
+ 2.     Set the following environment variables:
+
+        SYBASE
+
+        - Set SYBASE to the full pathname of the SAP ASE SDK root directory.
+
+        SYBASE_OCS
+
+        - Set SYBASE_OCS to the directory where the Open client product is
+        installed. These two variables will be accessed as $SYBASE/$SYBASE_OCS
+
+        SYBPLATFORM
+
+        - Set SYBPLATFORM to the SAP ASE SDK abbreviation for your platform name.
+        This is required by the example make file. Legal values are listed below.
+
+                HP:
+
+		hpia                    - 32bit HP IPF HP-UX B.11.22
+                nthread_hpia            - 32bit HP IPF HP-UX B.11.22 with native threads
+		hpia64                  - 64bit HP IPF HP-UX B.11.22
+                nthread_hpia64          - 64bit HP IPF HP-UX B.11.22 with native threads
+
+                hpux                    - HP 9000 HP-UX B.11
+                nthread_hpux            - HP 9000 HP-UX B.11 with native threads
+                hpux64                  - 64bit HP 9000 HP-UX B.11
+                nthread_hpux64          - 64bit HP 9000 HP-UX B.11 with native threads
+
+		Linux:
+ 
+		linux                   - 32bit IA32 Redhat EL5.3
+		nthread_linux           - 32bit IA32 Redhat EL5.3 with native threads
+
+		linux64                 - 64bit x86_64 Redhat EL5.3
+		nthread_linux64         - 64bit x86_64 Redhat EL5.3 with native threads
+
+		Linux on IBP P Series:
+
+		ibmplinux64		- 64bit x86_64 Redhat EL5.3
+		nthread_ibmplinux64	- 64bit x86_64 Redhat EL5.3 with native threads
+
+                IBM rs6000:
+
+                rs6000                  - IBM RISC System 6000
+                nthread_rs6000          - IBM RISC System 6000 with aix native threads
+                rs600064                - IBM RISC System 6000 64bit
+                nthread_rs600064        - IBM RISC System 6000 64bit with aix native threads
+
+                Sun SPARC:
+
+                sun_svr4                - Sun Solaris SPARC
+                nthread_sun_svr4        - Sun Solaris SPARC with native threads
+                sun_svr464              - 64bit Sun Solaris SPARC
+                nthread_sun_svr464      - 64bit Sun Solaris SPARC with native threads
+
+                Sun Intel/AMD:
+
+                sunx86                  - Sun Solaris on Intel x86
+                nthread_sunx86          - Sun Solaris on Intel x86 with native threads
+                sunx8664                - 64bit Sun Solaris on Intel x86_64
+                nthread_sunx8664        - 64bit Sun Solaris on Intel x86_64 with native threads
+
+        DSQUERY
+
+        - Set DSQUERY to the name of the server that the examples connect to.
+
+
+        Set the library path environment variable. Depending on your platform, use
+        the following (example for Sun Solaris):
+
+        C-shell:
+
+        setenv LD_LIBRARY_PATH ${SYBASE}/${SYBASE_OCS}/lib:$LD_LIBRARY_PATH
+
+        Bourne/Korn shell:
+
+        LD_LIBRARY_PATH=${SYBASE}/${SYBASE_OCS}/lib:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH
+
+        Some platforms (sun_svr4, hpux) require /usr/ccs/bin in your path.
+
+	For the Cobol environment, you need to amend PATH to add $COBDIR/bin,
+	where $COBDIR is the path to the Cobol installation. Also, COBMODE
+	must be set to 32 or 64 , the latter is only supported on certain
+	platforms. See the platform specific Release Notes for this.
+	Lastly, $COBDIR/lib must be present in LD_LIBRARY_PATH or the correct
+	environment variable for your platform. For HP/UX this is SHLIB_PATH.
+
+Compiling the Examples
+
+
+        To compile all the example programs, type:
+
+                make all
+
+        To compile one at a time, type:
+
+		make example1, make example2, make example3 etc.
+
+	To run them enter
+
+ 	./example1
+
+	or
+
+	./example2 etc.
+
+These sample programs wait for user input so an additional <return> 
+needs to be entered after starting them, this is required as on some
+cobol systems the first ACCEPT is used for the command line parsing.
+

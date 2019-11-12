@@ -1,0 +1,78 @@
+This is the README file for PHP sample scripts.
+
+The sample scripts demonstrate specific functionality of the SAP ASE
+PHP extension. These scripts are designed as guides for application programmers,
+not as PHP training aids.
+
+It is recommended that users read the descriptions at the top of each
+script file and examine the source code prior to attempting to use the
+sample script. 
+
+Lastly, these script are not intended as examples of robust,
+production-quality open client applications; only minimal effort has
+been made to "bullet-proof" these examples.
+
+LIST OF EXAMPLE PROGRAMS (Source file names given in parentheses)
+
+firstapp	(FILES: firstapp.php)
+
+        A simple example program that connects to a server, sends a
+        select query, and prints the rows. 
+
+dsnconnect	(FILES: dsnconnect.php, sample_utils.php)
+
+	A simple example program that connects to a server using a DSN
+	connection string. It prints out the servername, account and
+	the current database.
+
+
+RUNNING THE EXAMPLES
+
+To run an example, perform the following steps:
+
+ 1.	Verify that you have a user account on an available ASE. 
+	These samples will work with OCS 15.7 and up. 
+	Depending on the example program, there may be special requirements.
+	For each example, the introductory comment in the main source file 
+	lists the specific server requirements. 
+
+ 2.	Set the following environment variables:
+
+	${SYBASE} is set to the full pathname of the SAP ASE SDK root directory.
+
+	${SYBASE_OCS} is set to the directory where the Open Client
+		product is installed (e.g. OCS-16_0).
+
+	${DSQUERY} is set to the name of the server to connect to.
+
+	Set the library path environment variable. Depending on your platform, 
+	use the following (example for Sun Solaris):
+
+        	C-shell:
+		setenv LD_LIBRARY_PATH ${SYBASE}/${SYBASE_OCS}/lib
+
+		Bourne/Korn shell:
+		LD_LIBRARY_PATH=${SYBASE}/${SYBASE_OCS}/lib
+		export LD_LIBRARY_PATH
+
+	Note 1: Refer to your operating sytem documentation for the
+		name of the library path environment variable.
+		(E.g. on hpux, use SHLIB_PATH)
+
+	Note 2: Some platforms (sun_svr4, hpux) require /usr/ccs/bin
+		in your path.
+
+	Note 3: Some platforms (such as rs6000) require /usr/lib in
+		your LD_LIBRARY_PATH.
+
+ 4.	Add a line to your default php.ini file that loads the
+ 	SAP ASE PHP extension. You can find an example in
+	$SYBASE/$SYBASE_OCS/config/php.ini
+	Alternatively you can set the path to this php.ini file in the
+	PHPRC environment variable or call php with the -c command line option.
+
+ 5.	Run the example with the command:
+ 	php <program>
+	or
+	php -c <path to php.ini> <program>
+	where <program> is the file name of the program

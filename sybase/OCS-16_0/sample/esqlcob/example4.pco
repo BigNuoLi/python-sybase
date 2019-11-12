@@ -1,0 +1,195 @@
+      ********************************************************************
+ 
+      * Copyright Notice and Disclaimer
+      * -------------------------------
+ 
+      * (c) Copyright 2013.
+      * SAP AG or an SAP affiliate company. All rights reserved.
+      * Unpublished rights reserved under U.S. copyright laws.
+ 
+      * SAP grants Licensee a non-exclusive license to use, reproduce,
+      * modify, and distribute the sample source code below (the "Sample Code"),
+      * subject to the following conditions:
+ 
+      * (i) redistributions must retain the above copyright notice;
+ 
+      * (ii) SAP shall have no obligation to correct errors or deliver
+      * updates to the Sample Code or provide any other support for the
+      * Sample Code;
+ 
+      * (iii) Licensee may use the Sample Code to develop applications
+      * (the "Licensee Applications") and may distribute the Sample Code in
+      * whole or in part as part of such Licensee Applications, however in no
+      * event shall Licensee distribute the Sample Code on a standalone basis;
+ 
+      * (iv) and subject to the following disclaimer:
+      * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+      * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+      * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+      * SAP AG or an SAP affiliate company OR ITS LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+      * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+      * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+      * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+      * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+      * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+      * USE OF THE SAMPLE CODE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+      * DAMAGE.
+ 
+      ********************************************************************
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.  EXAMPLE4.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.  xyz.
+       OBJECT-COMPUTER.  xyz.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       
+      * example4.pco
+
+      * This is a non-interactive embedded COBOL program which 
+      * displays rows from the titles table in the pubs2 
+      * database and uses a semi-sensitive scrollable cursor 
+      * to retrieve rows. This sample illustrates syntax usage
+      * related to scrollable cursors. 
+ 
+           EXEC SQL INCLUDE SQLCA END-EXEC.
+       
+           EXEC SQL BEGIN DECLARE SECTION END-EXEC 
+       
+      * userid and password
+       
+         01  UID    PIC X(30).
+         01  PASS   PIC X(30).
+
+      * input from database
+
+         01  M-TITLESTRING  PIC X(66).
+
+      * for user inputs
+
+         01    USER-TYPE    PIC X(13).
+         01    USER-TITLEID PIC X(6).
+
+           EXEC SQL END DECLARE SECTION END-EXEC.
+
+      * For reading in and ignoring cmd-line arg.
+         01    CMD-ARG    PIC X(1).
+               
+       PROCEDURE DIVISION.
+       P0.
+
+      * get rid of the cmd line arg if any 
+
+           DISPLAY 'Press enter to start'
+           ACCEPT CMD-ARG.
+       
+           EXEC SQL WHENEVER SQLERROR PERFORM ERR-PARA END-EXEC
+           EXEC SQL WHENEVER SQLWARNING PERFORM WARN-PARA END-EXEC
+           EXEC SQL WHENEVER NOT FOUND CONTINUE END-EXEC.
+       
+      * NOTE: fill in your user name and password here.
+           MOVE "username" TO UID.
+           MOVE "password" TO PASS.
+       
+           EXEC SQL CONNECT :UID IDENTIFIED BY :PASS END-EXEC.
+           EXEC SQL USE pubs2 END-EXEC.
+
+           PERFORM TYPE-LOOP.
+
+           STOP RUN.
+
+      * Print a list of book types.
+       TYPE-LOOP.
+
+      * Declare the cursor of type: SEMI_SENSITIVE SCROLL
+
+           EXEC SQL DECLARE typelist SEMI_SENSITIVE SCROLL CURSOR FOR
+               SELECT DISTINCT title FROM titles END-EXEC.
+
+           EXEC SQL OPEN typelist END-EXEC.
+           DISPLAY ' '.    
+
+      * SQLCODE = 100 means 'no rows found'. In this example, the
+      * FETCH LAST followed by FETCH NEXT will cause the cursor to
+      * be positioned 'after the last row', this generates 
+      * SQLCODE = 100. 
+
+           PERFORM PRINT-TYPE UNTIL SQLCODE = 100.
+           EXEC SQL CLOSE typelist END-EXEC.
+
+           DISPLAY ' '.
+
+      * Print the titles from the typelist cursor.
+      * Note that using SQLCODE = 100 is not a good method to end
+      * a FETCH cycle with a scrollable cursor, as positioning 
+      * the cursor before the first row or after the last row will 
+      * generate SQLCODE = 100.
+      *
+       PRINT-TYPE.
+
+	   DISPLAY 'FETCHING first title, ABSOLUTE, OFFSET = 3'.
+           DISPLAY ' '.
+           EXEC SQL FETCH ABSOLUTE 3 typelist INTO :M-TITLESTRING END-EXEC.
+           IF SQLCODE NOT = 100
+               DISPLAY M-TITLESTRING.
+
+           DISPLAY ' '.
+	   DISPLAY 'FETCHING second title, NEXT'.
+           DISPLAY ' '.
+	   EXEC SQL FETCH NEXT typelist INTO :M-TITLESTRING END-EXEC.
+	   IF SQLCODE NOT = 100
+	       DISPLAY M-TITLESTRING.
+
+           DISPLAY ' '.
+	   DISPLAY 'FETCHING third title, LAST'.
+           DISPLAY ' '.
+	   EXEC SQL FETCH LAST typelist INTO :M-TITLESTRING END-EXEC.
+	   IF SQLCODE NOT = 100
+	       DISPLAY M-TITLESTRING.
+
+           DISPLAY ' '.
+	   DISPLAY 'FETCHING fourth title, NEXT'.
+           DISPLAY ' '.
+	   EXEC SQL FETCH NEXT typelist INTO :M-TITLESTRING END-EXEC.
+	   IF SQLCODE NOT = 100
+	       DISPLAY M-TITLESTRING
+	   ELSE
+	       DISPLAY 'NO ROWS FOUND FOR THIS FETCH CALL'.
+
+      *************************************************************
+       WARN-PARA.
+            
+            DISPLAY "Warning message is " SQLERRMC.
+
+            IF SQLWARN1 EQUAL "W"
+                DISPLAY "Data has been truncated.".
+            IF SQLWARN2 EQUAL "W" 
+                DISPLAY "A null value was eliminated from the argument
+      -            	" set of a function.".
+            IF SQLWARN3 EQUAL "W" 
+                DISPLAY "An into clause had too many or too few host
+      -    	" variables.".
+            IF SQLWARN4 EQUAL "W"
+                DISPLAY "A dynamic update or delete was lacking a where
+      -    	" clause.".
+            IF SQLWARN5 EQUAL "W"
+                DISPLAY "A server conversion or truncation error
+      -    	" occurred.".
+        WARN-PARA-END.
+            EXIT.
+
+      *************************************************************
+        ERR-PARA.
+      *
+      * print the error code, the error message and the line number of
+      * the command that caused the error.
+      *
+
+            DISPLAY "Error code is " SQLCODE.
+            
+            DISPLAY "Error message is " SQLERRMC.
+
+            STOP RUN.
+      *************************************************************

@@ -1,6 +1,6 @@
 /******************************************************************
 
- Copyright 2001 by Object Craft P/L, Melbourne, Australia.
+ Copyright 2019 by SAP EIM SDI.
 
  LICENCE - see LICENCE file distributed with this software for details.
 

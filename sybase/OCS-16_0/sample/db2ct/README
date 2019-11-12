@@ -1,0 +1,212 @@
+This directory contains the examples to accompany the DB-Library to
+Client-Library Migration Guide.
+
+Build instructions
+~~~~~~~~~~~~~~~~~
+Makefiles are provided for UNIX/LINUX and for Microsoft Windows.
+
+The makeable programs are listed below. To build a program for Unix/Linux, do
+the following at the prompt (C-shell):
+	setenv SYBPLATFORM <platform>
+	make <prog>
+For <prog>, substitute the program name from the list of programs below.
+<platform> is the SAP ASE SDK header file abbreviation for your platform
+(sun_svr4, sun_svr464, nthread_sun_svr4(64), hpux, nthread_hpux, ... )
+
+To make a program on Windows type:
+	nmake <prog>
+
+Where <prog> is the program name from the list below (under "Programs").
+
+On all platforms, omitting <prog> will cause (n)make to build 'all' programs
+except dbfirst. dbfirst uses dblibrary and will only compile on UNIX
+in non-threaded modes. This is because dblibrary is not thread-safe on UNIX.
+Additionally, dbfirst needs dblibrary to be installed which is not the case
+when only OpenServer is installed.
+If needed, dbfirst can be built using the following command:
+
+For Unix:
+	make dbfirst
+
+For Windows:
+	nmake dbfirst
+
+Note that many of these examples rely on finding the exutils.c Client-Library 
+product sample. You will need to have the Client-Library sample programs 
+installed to make the programs below. The make file uses the SYBASE 
+environment variable to find the path to the Client-Library samples.
+
+This directory does not include DB-Library versions of the converted examples
+(except for dbfirst.c). The Migration examples are conversions of the 
+DB-Library product samples. If you have the Open Client kit, you should have 
+the DB-Library versions already.
+
+Programs
+~~~~~~~~
+
+  ctfirst -- A simple example that initializes Client-Library, connects
+	to a server, and raises deliberate errors to demonstrate the
+	callback error handlers. The dbfirst example does the same thing
+	in DB-Library.
+
+  dbfirst -- A simple DB-Library example that initializes DB-Library, 
+	connects to a server, and raises a deliberate error. The ctfirst
+	example does the same thing in Client-Library. This code is 
+	provided only for comparison to ctfirst.
+
+  ex01ct -- DB-Library's example1.c converted to Client-Library. Illustrates
+	conversion of code that does 2 selects and uses the DBCURCMD() and
+	DBCURROW() functions.
+
+  ex02ct -- DB-Library's example2.c converted to Client-Library. Illustrates
+	conversion of code which creates a table and selects from it. Shows
+	binding for a wide variety of datatypes.
+
+	This program requires that the file 'datafile' be in the working
+	directory. This file provides data to populate the created table.
+
+  ex03ct -- DB-Library's example3.c converted to Client-Library. Illustrates
+	conversion of code which sends a SELECT language command and handles
+	regular and compute rows.
+
+	Note that the Client-Library 'compute' example demonstrates a more
+	robust and modular implementation of similar processing.
+
+  ex04ct -- DB-Library's example4 converted to Client-Library. Illustrates
+        how Client-Library's array binding offers similar functionality to
+        DB-Library row buffering.
+
+        This example uses the routines in ctrowbuf.c. These routines use
+        Client-Library array binding to create and manage a row buffer.
+
+  ex05ct -- DB-Library's example5.c converted to Client-Library. Illustrates
+	conversion of dbconvert() and dbdatename() calls.
+
+	This example uses the dbct_datename() function from the 
+	dbctutil.c sample utility library.
+
+  ex06ct -- DB-Library's example6.c converted to Client-Library. Illustrates
+	conversion of DB-Library browse-mode updates to Client-Library 
+	cursor updates. Creates an 'alltypes' table, inserts rows to it,
+        then uses a cursor to increment the 'age' column in each row.
+
+	This program requires that the file 'datafile' be in the working
+	directory. This file provides data to populate the created table.
+
+        As a bonus sideshow, this program includes code that shows how 
+	simultaneous commands can be executed on one connection using a 
+	Client-Library cursor. To enable compilation of this code, make 
+	sure SIDESHOW is defined on the compiler command line for ex06ct.c
+
+  ex08ct -- DB-Library's example8.c converted to Client-Library. Illustrates
+	conversion of code that sends an RPC command. Also illustrates 
+	conversion of code that handles regular row results and output 
+	parameter results.
+
+	This program expects the rpctest stored procedure to exist in
+	pubs2, and that the user has execute permission for it. The 
+        rpctest.sql isql script creates the procedure in pubs2.
+
+	Note that the Client-Library 'rpc' example demonstrates a more 
+	robust and modular implemenation of similar processing.
+
+  ex09ct -- DB-Library's example9.c converted to Client-Library. Illustrates
+	conversion of a dbwritetext() call (used without dbmoretext()).
+
+	This example uses the txtimg.c utility routines.
+
+  ex10ct -- DB-Library's example10.c converted to Client-Library. Illustrates
+	conversion of code that used dbwritetext() and dbmoretext() to send
+	text/image values.
+
+	This example uses the txtimg.c utility routines.
+
+	The file 'imagefile' provides sample image data that can be used
+	with this program.
+
+  ex11ct -- DB-Library's example11.c converted to Client-Library. Illustrates
+        conversion of code that selects a large-value text/image column and 
+        writes the value to an operating system file.
+        
+The source files are as follows:
+
+  dbtoctex.h -- Common header file for all the 'ex<N>ct' programs. Defines
+	user and password for server logins.
+
+  dbfirst.c -- The source for the dbfirst program.
+ 
+  ctfirst.c -- The source for the ctfirst program.
+
+  ex01ct.c -- The Client-Library version of DB-Library's example1.
+
+  ex02ct.c -- The Client-Library versiom of DB-Library's example2.
+
+  ex03ct.c -- The Client-Library version of DB-Library's example3.
+
+  ex04ct.c -- The Client-Library version of DB-Library's example4.
+
+  ex05ct.c -- The CS-Library version of DB-Library's example5.
+
+  ex06ct.c -- The Client-Library version of DB-Library's example6.
+
+  ex08ct.c -- The Client-Library version of DB-Library's example8.
+
+  ex09ct.c -- The Client-Library version of DB-Library's example9.
+
+  ex10ct.c -- The Client-Library version of DB-Library's example10.
+
+  ex11ct.c -- The Client-Library version of DB-Library's example11.
+
+  exutils.c -- From the Client-Library online samples. The Converted programs
+	use these utility routines for initialization, callback error handling,
+	and connection establishment.
+
+	Note that exutils.c is not included in these examples. The makefile
+	uses the SYBASE environment variable to find the Client-Library
+	online samples.
+
+  exutils.h -- The header file containing prototypes for the exutils.c 
+	routines.
+
+	Note that exutils.c is not included in these examples. The makefile
+	uses the SYBASE environment variable to find the Client-Library
+	online samples.
+
+  dbctutil.c -- Contains utility routines useful for converting DB-Library
+	code.
+
+  dbctutil.h -- Header file containing prototypes for the dbctutil.c routines.
+
+  ctrowbuf.c -- Utility routines for using Client-Library's array binding
+        feature.
+
+  ctrowbuf.h -- Header for ctrowbuf.c routines.
+
+  testctrb.c -- Simple program used to test the ctrowbuf.c routines.
+        (essentially a dumber-than-isql isql).
+
+  txtimg.c -- Useful utility routines for updating text/image values with
+	Client-Library.
+
+  txtimg.h -- Header for txtimg.c
+
+  datafile -- A text-format input file required by ex02ct.c and ex06ct.c.
+
+  imagefile -- A data file for the ex10ct example program.
+
+  rpctest.sql -- SQL Script that creates the rpctest stored procedure required
+	by example8 and ex08ct. If you use this to set up for the DB-Library
+	example8 program, you need to make sure that the user login used by 
+	example8 has pubs2 as the default database.
+
+  Makefile -- The UNIX/LINUX make file for the sample programs. (UNIX only)
+
+  makefile -- Microsoft nmake makefile for MS Visual C++.  (Windows only)
+
+  sybopts.sh -- Helper script for UNIX makefiles that build Open Client
+                and Open Server applications. (UNIX only)
+
+  dbtoctex.def -- Link segment definition file for making the migration
+                  sample programs on Windows.
+
+  README -- This file.

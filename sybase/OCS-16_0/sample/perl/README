@@ -1,0 +1,166 @@
+This is the README file for Perl sample programs.
+
+The sample programs demonstrate specific functionality of the SAP ASE
+Perl extension module. These programs are designed as guides for 
+application programmers, not as Perl training aids.
+
+It is recommended that users read the descriptions at the top of each
+source file and examine the source code prior to attempting to use the
+sample programs. 
+
+Lastly, these programs are not intended as examples of robust,
+production-quality open client applications; only minimal effort has
+been made to "bullet-proof" these applications.
+
+LIST OF EXAMPLE PROGRAMS (Source file names given in parentheses)
+
+firstapp        (FILE: firstapp.pl)
+
+        A simple example program that connects to a server, sends a
+        select query, and prints the rows. 
+
+
+retrieve	(FILE: retrieve.pl)
+
+        This is a Perl example program that retrieves rows from the pubs2
+        authors table. It then goes on to insert into tempdb, appending
+        new rows doing a batch insert. Then the updated authors table is
+        printed to STDOUT. The example then disconnects and exits.
+
+
+exec		(FILE: exec.pl)
+
+        This is a Perl example program that shows basic usage of stored
+        procedures in Perl. It connects to a server, creates two stored
+        procedures, calls prepare and bind and then executes the procedures.
+        The example writes to STDOUT, then drops the stored procedures and 
+	disconnects, then exits.
+
+
+RUNNING THE EXAMPLES
+
+To run an example, perform the following steps:
+
+ 1.	Verify that you have a user account on an available ASE. 
+	These samples will work only with OCS 15.7 and up. 
+	Depending on the example program, there may be special requirements.
+	For each example, the introductory comment in the main source file 
+	lists the specific server requirements. 
+
+
+ 2.	Set the following environment variables:
+
+	$SYBASE is set to the full pathname of the SAP ASE SDK root directory.
+
+	$SYBASE_OCS is set to the directory where the Open Client
+		product is installed (e.g. OCS-16_0).
+
+	$DSQUERY is set to the name of the server to connect to.
+
+	$PATH or path to the Perl interpreter.
+
+	Perl scripts normally have on the fist line a "#!" followed
+	by the full path to the perl executable (Unix/Linux). 
+
+	  Example for linux: #!/usr/local/bin/perl
+
+	  Example for Windows: #!perl 
+
+	To keep the sample script generic for all SAP released
+	platforms, the way to invoke the example is to execute from
+	the command line the following:
+
+	  perl ./firstapp.pl 
+
+	   -or- 
+
+	  perl firstapp.pl 
+
+	depending on your platform and path settings. 
+
+	Feel free to add your own customizations to the sample. 
+
+	$PERL5LIB:
+
+	  $PERL5LIB must point to the following directory structure:
+
+	Top level:
+
+	  $SYBASE/$SYBASE_OCS/perl
+
+	Sub level:
+
+	  Followed by either: sybaseperl_32 or sybaseperl_64 and, depending on
+	  usage of re-entrant libraries followed by a 'r'.
+
+	  Example: linux 64bit threaded:
+
+	  $SYBASE/$SYBASE_OCS/perl/sybaseperl_64r/lib
+
+	  Lastly, for the Perl module, add 'lib' and for the driver 'arch'.
+
+	  Full example:
+
+	  C shell:
+
+	    setenv PERL5LIB "$SYBASE/$SYBASE_OCS/perl/sybaseperl_64r/lib/lib: \
+		$SYBASE/$SYBASE_OCS/perl/sybaseperl_64r/lib/arch"
+
+	The LD_LIBRARY_PATH variable must point to the SAP ASE SDK installation,
+	as described in the documentation.
+
+	Note 1: Refer to your operating sytem documentation for the
+		name of the library path envirmonment variable.
+		(E.g. on hpux, use SHLIB_PATH)
+
+	Note 2: Some platforms (sun_svr4, sunx86, hpux) require /usr/ccs/bin
+		in your path.
+
+	Note 3: Some platforms (such as rs6000) require /usr/lib in
+		your LD_LIBRARY_PATH.
+
+	For Windows:
+
+	set PERL5LIB="$SYBASE\$SYBASE_OCS\perl\sybaseperl_64\dll\lib; \
+		$SYBASE\$SYBASE_OCS\perl\sybaseperl_64\dll\arch;"
+
+	-or-
+	
+	set PERL5LIB="$SYBASE/$SYBASE_OCS/perl/sybaseperl_64/dll/lib; \
+		$SYBASE/$SYBASE_OCS/perl/sybaseperl_64/dll/arch;"
+
+	Note: ActiveState Perl for Windows (winx64) must be used. The 
+	      version built and tested with is:
+
+		 ActivePerl 5.14.1.1401-MSWin32-x64-294969 or informally:
+		 ActivePerl 5.14.1 Build 1401.
+
+	      This release includes the required DBI, version 1.161
+
+	In all cases, if you build your own version of Perl it must be 
+	at least version 5.14.1 and for the DBI the version must be at 
+	least 1.616. 
+
+	If you plan to build your own Perl installation it must adhere to
+	the SAP ASE Perl Drivers release model (threading, non-threading, 
+	32/64bit etc).
+
+	Older Perl versions will fail to load and execute the driver.
+
+3.	If necessary, in the sample edit the connection information. The
+	following keyword arguments of the connect() method of the driver 
+	module should be evaluated:
+
+	$uid -  User name to connect with. Specifed as 'sa' in the shipped
+		version.
+
+	$pwd -  Password to connect with. Defined as "" (no
+		password) in the shipped version.
+
+	$srv -  Server name to connect to. Fails if DSQUERY is not set.
+
+	$dbase - Database that is initially used. The example uses the pubs2
+		 database.
+
+ 4.	Run the example with the command "firstapp.pl". Note the example
+	program assumes the Perl installation is in "/usr/local/bin"

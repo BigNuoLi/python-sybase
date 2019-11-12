@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2001 by Object Craft P/L, Melbourne, Australia.
+# Copyright 2019 by SAP EIM SDI.
+#
+# This version of python-sybase is folked from https://github.com/fbessho/python-sybase
 #
 # LICENCE - see LICENCE file distributed with this software for details.
 #
@@ -112,6 +114,8 @@ elif os.name == 'nt':                   # win32
     # This seems a bit sloppy to me, but is no worse than what's above.
     if sybase.find('15') > 0:
         syb_libs = ['libsybblk', 'libsybct', 'libsybcs']
+    if sybase.find('16') > 0:
+        syb_libs = ['libsybblk64', 'libsybct64', 'libsybcs64']
 else:                                   # unknown
     import sys
     sys.stderr.write(
@@ -247,12 +251,12 @@ class my_sdist(sdist):
         sdist.run(self)
 
 setup(name="python-sybase",
-      version="0.40pre2",
-      maintainer=u"Sebastien Sable",
-      maintainer_email="sable@users.sourceforge.net",
+      version="0.41",
+      maintainer=u"Nuo Li",
+      maintainer_email="nuo.li@sap.com",
       description=doclines[0],
-      url="http://python-sybase.sourceforge.net/",
-      license="http://www.opensource.org/licenses/bsd-license.html",
+      url="https://github.com/BigNuoLi/python-sybase",
+      license="",
       platforms = ["any"],
       classifiers = filter(None, classifiers.split("\n")),
       long_description = "\n".join(doclines[2:]),

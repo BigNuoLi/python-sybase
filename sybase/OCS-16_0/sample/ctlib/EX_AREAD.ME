@@ -1,0 +1,145 @@
+###############################################################################
+#
+# Copyright Notice and Disclaimer
+# -------------------------------
+#       (c) Copyright 2013.
+#       SAP AG or an SAP affiliate company. All rights reserved.
+#       Unpublished rights reserved under U.S. copyright laws.
+#
+#       SAP grants Licensee a non-exclusive license to use, reproduce,
+#       modify, and distribute the sample source code below (the "Sample Code"),
+#       subject to the following conditions:
+#
+#       (i) redistributions must retain the above copyright notice;
+#
+#       (ii) SAP shall have no obligation to correct errors or deliver
+#       updates to the Sample Code or provide any other support for the
+#       Sample Code;
+#
+#       (iii) Licensee may use the Sample Code to develop applications
+#       (the "Licensee Applications") and may distribute the Sample Code in
+#       whole or in part as part of such Licensee Applications, however in no
+#       event shall Licensee distribute the Sample Code on a standalone basis;
+#
+#       (iv) and subject to the following disclaimer:
+#       THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+#       INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+#       AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+#       SAP AG or an SAP affiliate company OR ITS LICENSORS BE LIABLE FOR ANY DIRECT, 
+#	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+#       BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+#       OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#       ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+#       TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+#       USE OF THE SAMPLE CODE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+#       DAMAGE.
+#
+###############################################################################
+
+Introduction
+------------
+
+This README file describes a collection of routines which form an example of
+writing an asynchronous layer on top of CT-Lib. It uses hooks provided by
+CT-Lib to allow seamless polling and use of CT-Lib's completion callbacks.
+
+The library functions assume that the calling program is in asynchronous mode,
+and supports both deferred and non-deferred async modes.
+
+The example program is split into two files:
+
+	ex_alib.c	Contains the source to the library portion of
+			the example. It is meant to be part of a library
+			interface which supports asynchronous calls.
+			This module provides a means of sending a query to
+			and retrieving the results from a server, all within
+			one asynchronous operation.
+
+	ex_amain.c	Contains the source to the main program which uses
+			the services provided by ex_alib.c. It also contains
+			utility routines to display the result area used.
+
+Async Data Structures
+---------------------
+
+Two data structures are used in the example program:
+
+	EX_ASYNC	This is an internal structure used by ex_alib.c.
+			Since the end user should not look at this structure,
+			it is defined as a void pointer in the public header
+			file. The ex_alib.c module defines the actual
+			structure.
+
+	EX_RESULTS	This is the public data structure which is filled
+			in by the ex_alib.c module, and used by ex_amain.c
+			for display results. An important aspect of the
+			pointer arrays defined in this structure is that
+			the results are stored (and hence indexed) in column
+			order, not the more natural row order. This is a
+			result of CT-Lib only being able to do column array 
+			binding.
+
+Async Interface
+---------------
+
+Three functions are provided by ex_alib.c to allow a user to send a
+query and get the results into a EX_RESULTS data structure.
+
+ex_async_alloc() will allocate a EX_ASYNC handle, and fill it with the
+data provided by the user. It requires the following arguments:
+
+	connection	An active CT-Lib connection, which is in full async
+			mode.
+
+	results		A pointer to a EX_RESULTS structure which will be
+			filled in by ex_alib when it processes results.
+
+	maxrows		The maximum number of rows to fetch from the server.
+			Any additional rows will be thrown away.
+
+	mempool		A pointer to user allocated space to use when
+			results arrive. Since ex_alib cannot malloc memory
+			at interrupt level (malloc is not re-entrant), the
+			user needs to provide it with a pre-allocated chunk.
+			If this memory is exhausted, the example program
+			will terminate.
+
+	maxpool		Number of bytes available in mempool.
+
+	ex_handle	Pointer to an EX_ASYNC pointer. This will contain
+			the newly allocated handle after the function
+			returns.
+
+ex_async_query() will send a query to a server and process the results.  Once
+it completes, it will invoke the completion callback installed by the user
+into CT-Lib, and/or report a completion via ct_poll(). The function takes
+the following arguments:
+
+	ex_handle	An async handle previously allocated by the 
+			ex_async_alloc() function.
+
+	query		A string containing the query to send.
+
+	querylen	Length of 'query', may be CS_NULLTERM.
+
+The ex_async_query() function may be called as may times as desired to process
+different queries. The memory pool in the async handle will be re-used for
+each query.
+
+ex_async_free() will free up the async handle allocated by ex_async_alloc().
+It will not free up the memory pool, or any other user provided resources.
+The function take the following argument:
+
+	ex_handle	An async handle previously allocated by the 
+			ex_async_alloc() function. Once this function
+			returns, the ex_handle cannot be re-used.
+
+
+Error Handling
+--------------
+
+The error processing is split into recoverable and non-recoverable errors.
+Non-recoverable errors errors are ungracefully handled using "panic"
+functions which report the error and terminate the process. Currently, there
+are quite a few errors which cause panics that could be re-assigned as
+recoverable errors.
